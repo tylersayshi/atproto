@@ -19,6 +19,7 @@ const SECRET = process.env.ATCR_WEBHOOK_SECRET;
 const COMPOSE_FILE = process.env.COMPOSE_FILE || '/pds/compose.yaml';
 const DEPLOY_SERVICE = process.env.DEPLOY_SERVICE || 'pds';
 const DEPLOY_TAG = process.env.DEPLOY_TAG || 'latest';
+const EXPECTED_REPO = process.env.EXPECTED_REPO || 'laugh.town/pds';
 const PORT = Number(process.env.PORT || 8787);
 
 if (!SECRET) {
@@ -82,22 +83,23 @@ const server = createServer((req, res) => {
     try { evt = JSON.parse(raw.toString('utf8')); }
     catch { res.writeHead(400); return res.end(); }
 
-    // FILTER — the load-bearing guard. Field names below are best-effort; BEFORE relying on
-    // this in prod, point the atcr webhook at a request bin, push once, and confirm the real
-    // payload shape. Without a correct tag filter, every :sha-* build would restart the PDS.
-    const type = evt.event || evt.type || evt.action;
-    const tag = evt.tag || evt.reference || (typeof evt.image === 'string' ? evt.image.split(':')[1] : undefined);
-    const repo = evt.repository || evt.repo || evt.name;
+    // FILTER — confirmed against a real atcr payload (2026-07-11). A single `docker push`
+    // fires ~3 webhook calls: the platform image manifest and buildx's provenance/attestation
+    // manifest (both media_type ...image.manifest.v1+json, NO tag), plus the OCI image index
+    // (media_type ...image.index.v1+json) which is the ONLY call carrying push_data.tag.
+    // Gating on push_data.tag === DEPLOY_TAG therefore both selects the tagged event and
+    // dedupes the two untagged calls -> exactly one deploy per push.
+    const trigger = evt.trigger;                            // "push"
+    const tag = evt.push_data && evt.push_data.tag;         // "latest" | "sha-..." | undefined
+    const repo = evt.repository && evt.repository.repo_name; // "laugh.town/pds"
+    const digest = evt.push_data && evt.push_data.digest;
 
-    const isPush = type === 'image.push' || type === 'push' || type === undefined; // atcr fires only on push if only that box is checked
-    const tagOk = tag === undefined || tag === DEPLOY_TAG;
-
-    if (!isPush || !tagOk) {
-      log(`ignored: type=${type} tag=${tag} repo=${repo}`);
+    if (trigger !== 'push' || repo !== EXPECTED_REPO || tag !== DEPLOY_TAG) {
+      log(`ignored: trigger=${trigger} tag=${tag} repo=${repo}`);
       res.writeHead(204); return res.end();
     }
 
-    log(`accepted: type=${type} tag=${tag} repo=${repo} -> deploying`);
+    log(`accepted: tag=${tag} repo=${repo} digest=${digest} -> deploying`);
     res.writeHead(202); res.end();
     deploy();
   });

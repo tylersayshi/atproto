@@ -22,10 +22,12 @@ Replaces Watchtower polling with event-driven deploys.
 | `DEPLOY_TAG` | `latest` | only pushes of this tag deploy |
 | `PORT` | `8787` | listen port (internal) |
 
-## ⚠️ Verify the payload filter before trusting it
-The tag filter in `server.js` (the `FILTER` comment) uses best-effort field names for atcr's
-payload. Point the webhook at a request bin, push one image, capture the real JSON, and confirm
-`event`/`tag`/`repository`. If the tag filter is wrong, **every `:sha-*` build restarts the PDS.**
+## Payload filter (confirmed 2026-07-11)
+The filter in `server.js` matches atcr's real payload: `trigger === "push"`,
+`push_data.tag === DEPLOY_TAG`, `repository.repo_name === EXPECTED_REPO`. Note a single push
+fires ~3 webhook calls — two untagged manifests (image + attestation) and one tagged OCI index;
+only the index carries `push_data.tag`, so gating on the tag dedupes to one deploy per push.
+If atcr changes its payload shape, re-capture and update the `FILTER` block.
 
 ## Security
 Mounts the Docker socket (root-equivalent on the host). Mitigations: not published to the host
