@@ -3,6 +3,7 @@ import {
   OAuthAuthorizationRequestQuery,
   oauthAuthorizationRequestQuerySchema,
 } from '@atproto/oauth-types'
+import createHttpError from 'http-errors'
 import { AuthorizationError } from '../errors/authorization-error.js'
 import { InvalidRequestError } from '../errors/invalid-request-error.js'
 import {
@@ -71,10 +72,28 @@ export function createAuthorizationPageMiddleware<
 
       // "same-origin" is required to support the redirect test logic below (as
       // well as refreshing the authorization page).
-
-      // @TODO Consider removing this altogether to allow hosting PDS and app on
-      // the same site but different origins (different subdomains).
-      validateFetchSite(req, ['same-origin', 'cross-site', 'none'])
+      //
+      // "same-site" is allowed only when the Referer matches the configured
+      // canonical app URL (PDS_HOME_URL) — laugh.town's app (laugh.town) and
+      // its PDS (bag.laugh.town) are different origins but share a
+      // registrable domain, so a top-level navigation between them carries
+      // Sec-Fetch-Site: same-site rather than cross-site. Scoped to the
+      // configured home origin (rather than blanket-trusting every
+      // same-site subdomain) so this doesn't broaden what the check
+      // actually guards against.
+      if (req.headers['sec-fetch-site'] === 'same-site') {
+        const homeHref = server.customization.branding?.links?.find(
+          (link) => link.rel === 'canonical',
+        )?.href
+        if (!homeHref) {
+          throw createHttpError(
+            400,
+            'Forbidden sec-fetch-site header "same-site"',
+          )
+        }
+        validateReferrer(req, { origin: new URL(homeHref).origin })
+      }
+      validateFetchSite(req, ['same-origin', 'same-site', 'cross-site', 'none'])
       validateFetchMode(req, ['navigate'])
       validateFetchDest(req, ['document'])
       validateOrigin(req, issuerOrigin)
