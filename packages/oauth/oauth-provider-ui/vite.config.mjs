@@ -22,6 +22,16 @@ export default defineConfig({
     lingui(),
     tailwindcss(),
   ],
+  // Assets (e.g. the self-hosted brand fonts referenced via url() in
+  // style.css) are served by the custom assets-manifest middleware under
+  // this prefix, not from the site root — see
+  // packages/oauth/oauth-provider/src/router/assets/assets-manifest.ts.
+  // Only affects build output, not the `dev:ui` dev server.
+  experimental: {
+    renderBuiltUrl(filename) {
+      return `/@atproto/oauth-provider/~assets/${filename}`
+    },
+  },
   build: {
     emptyOutDir: false,
     outDir: './dist',
