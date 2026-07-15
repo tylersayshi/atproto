@@ -8,21 +8,20 @@ export const createRouter = (ctx: AppContext): Router => {
   router.get('/', function (req, res) {
     res.type('text/plain')
     res.send(`
-         __                         __
-        /\\ \\__                     /\\ \\__
-    __  \\ \\ ,_\\  _____   _ __   ___\\ \\ ,_\\   ___
-  /'__'\\ \\ \\ \\/ /\\ '__'\\/\\''__\\/ __'\\ \\ \\/  / __'\\
- /\\ \\L\\.\\_\\ \\ \\_\\ \\ \\L\\ \\ \\ \\//\\ \\L\\ \\ \\ \\_/\\ \\L\\ \\
- \\ \\__/.\\_\\\\ \\__\\\\ \\ ,__/\\ \\_\\\\ \\____/\\ \\__\\ \\____/
-  \\/__/\\/_/ \\/__/ \\ \\ \\/  \\/_/ \\/___/  \\/__/\\/___/
-                   \\ \\_\\
-                    \\/_/
+ _                   _       _
+| | __ _ _   _  __ _| |__   | |_ _____      ___ __
+| |/ _\` | | | |/ _\` | '_ \\  | __/ _ \\ \\ /\\ / / '_ \\
+| | (_| | |_| | (_| | | | | | || (_) \\ V  V /| | | |
+|_|\\__,_|\\__,_|\\__, |_| |_|  \\__\\___/ \\_/\\_/ |_| |_|
+               |___/
 
+a place for your comedy stuff on the internet
 
 This is an AT Protocol Personal Data Server (aka, an atproto PDS)
 
 Most API routes are under /xrpc/
 
+      Home: https://laugh.town
       Code: https://github.com/bluesky-social/atproto
  Self-Host: https://github.com/bluesky-social/pds
   Protocol: https://atproto.com

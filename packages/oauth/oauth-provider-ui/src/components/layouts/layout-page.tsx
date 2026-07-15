@@ -117,7 +117,7 @@ export function LayoutPage({
               </Link>
             )}
             {pageTitleStr && (
-              <h2 className="text-text-default text-2xl font-light">
+              <h2 className="font-display text-text-default text-2xl font-bold">
                 <title>{pageTitleStr}</title>
                 <b>{pageTitleStr}</b>
               </h2>

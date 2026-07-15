@@ -2,6 +2,7 @@ import { MessageDescriptor } from '@lingui/core'
 import { useLingui } from '@lingui/react'
 import { clsx } from 'clsx'
 import { JSX, ReactNode } from 'react'
+import { useCustomizationData } from '#/contexts/customization.tsx'
 import { Override } from '#/lib/util.ts'
 import { LocaleSelector } from '#/locales/locale-selector.tsx'
 
@@ -23,6 +24,7 @@ export function LayoutTitle({
   ...props
 }: LayoutTitleProps) {
   const { _ } = useLingui()
+  const { name } = useCustomizationData()
 
   const titleString =
     typeof title === 'string' ? title : title ? _(title) : undefined
@@ -53,10 +55,19 @@ export function LayoutTitle({
         )}
       >
         <div className="grid grow content-center md:justify-items-end">
+          {name && (
+            <div
+              key="wordmark"
+              className="font-masthead text-text-default mb-1 text-3xl md:mb-3 md:text-4xl"
+            >
+              {name}
+            </div>
+          )}
+
           {titleString && (
             <h1
               key="title"
-              className="text-primary text-xl font-semibold md:my-4 md:text-2xl lg:text-5xl"
+              className="font-display text-text-default text-xl font-bold md:my-4 md:text-2xl lg:text-4xl"
             >
               <title>{titleString}</title>
               {titleString}

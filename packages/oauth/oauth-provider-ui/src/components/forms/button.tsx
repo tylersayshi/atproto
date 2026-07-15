@@ -72,7 +72,7 @@ export function Button({
         'touch-manipulation overflow-hidden',
         'truncate tracking-wide',
         actionable ? 'cursor-pointer' : null,
-        shape === 'circle' ? 'rounded-full' : 'rounded-md',
+        shape === 'circle' ? 'rounded-full' : 'rounded-none',
         'flex items-center justify-center',
         PADDING_SIZES[shape][size],
         TEXT_SIZES[size],
@@ -85,12 +85,16 @@ export function Button({
         'focus:ring-primary focus:ring-2 focus:ring-offset-1 focus:ring-offset-white dark:focus:ring-offset-black',
 
         // Color
+        //
+        // laugh.town's "One Ink Rule" (DESIGN.md) — marquee-red (the branding
+        // "primary" color) is a stroke/underline accent, never a fill, so the
+        // primary button fills with ink instead of `bg-primary`.
         color === 'primary'
           ? clsx(
               'accent-slate-100',
               transparent
                 ? 'text-primary bg-transparent'
-                : 'bg-primary text-primary-contrast',
+                : 'bg-contrast-900 text-contrast-0 hover:bg-contrast-700',
             )
           : null,
         color === 'gray'

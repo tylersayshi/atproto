@@ -22,13 +22,17 @@ export function LayoutApp({ children, header, title }: LayoutAppProps) {
       <header className="flex items-center justify-between gap-4 p-4">
         {titleString && <title>{titleString}</title>}
         {logo && (
-          <h1 className="text-text-default flex min-w-0 truncate text-xl font-light capitalize">
+          // The page-specific title (e.g. "Devices") still surfaces via
+          // <title> below and, on LayoutPage screens, its own inline
+          // heading — so this header can stay the persistent brand
+          // wordmark rather than switching to whatever title is passed in.
+          <h1 className="text-text-default flex min-w-0 items-center truncate text-xl font-light">
             <img
               src={logo}
               alt={name || _(msg`Logo`)}
-              className="mr-4 h-6 object-contain object-left"
+              className="mr-3 h-6 object-contain object-left"
             />
-            {titleString ?? name}
+            <span className="font-masthead text-2xl">{name}</span>
           </h1>
         )}
 
