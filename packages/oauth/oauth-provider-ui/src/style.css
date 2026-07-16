@@ -81,12 +81,15 @@ declared below (matches how Google Fonts itself serves these). */
 :root {
   /* The following CSS variables will be injected dynamically based on the
   branding configuration. Injected values will override the default values
-  below. Defaults here are laugh.town's marquee-red / brick-danger (see
-  DESIGN.md) so the UI still looks on-brand before PDS_* branding env vars
-  are set. */
-  --branding-color-primary: 223 32 46;
+  below. Defaults here are laugh.town's ink-black primary / brick-danger
+  error (see DESIGN.md) so the UI still looks on-brand before PDS_*
+  branding env vars are set. Primary is intentionally achromatic (see
+  --branding-color-primary-saturation below) — red read as too aggressive
+  for a CTA/accent color, so buttons and links are black/white/gray. */
+  --branding-color-primary: 20 20 20;
   --branding-color-primary-contrast: 255 255 255;
   --branding-color-primary-hue: 25;
+  --branding-color-primary-saturation: 0%;
 
   --branding-color-error: 162 10 1;
   --branding-color-error-contrast: 255 255 255;
@@ -111,6 +114,7 @@ declared below (matches how Google Fonts itself serves these). */
 
 :root {
   --hue-primary: var(--branding-color-primary-hue);
+  --sat-primary: var(--branding-color-primary-saturation, 100%);
   --hue-error: var(--branding-color-error-hue);
   --hue-warning: var(--branding-color-warning-hue);
   --hue-info: var(--branding-color-info-hue);
@@ -128,19 +132,19 @@ declared below (matches how Google Fonts itself serves these). */
   --color-info-contrast: rgb(var(--branding-color-info-contrast));
   --color-success-contrast: rgb(var(--branding-color-success-contrast));
 
-  --color-primary-25: hsl(var(--hue-primary) 100% 97%);
-  --color-primary-50: hsl(var(--hue-primary) 100% 95%);
-  --color-primary-100: hsl(var(--hue-primary) 100% 90%);
-  --color-primary-200: hsl(var(--hue-primary) 100% 80%);
-  --color-primary-300: hsl(var(--hue-primary) 100% 70%);
-  --color-primary-400: hsl(var(--hue-primary) 100% 60%);
-  --color-primary-500: hsl(var(--hue-primary) 100% 53%);
-  --color-primary-600: hsl(var(--hue-primary) 100% 42%);
-  --color-primary-700: hsl(var(--hue-primary) 100% 34%);
-  --color-primary-800: hsl(var(--hue-primary) 100% 26%);
-  --color-primary-900: hsl(var(--hue-primary) 100% 18%);
-  --color-primary-950: hsl(var(--hue-primary) 100% 10%);
-  --color-primary-975: hsl(var(--hue-primary) 100% 7%);
+  --color-primary-25: hsl(var(--hue-primary) var(--sat-primary) 97%);
+  --color-primary-50: hsl(var(--hue-primary) var(--sat-primary) 95%);
+  --color-primary-100: hsl(var(--hue-primary) var(--sat-primary) 90%);
+  --color-primary-200: hsl(var(--hue-primary) var(--sat-primary) 80%);
+  --color-primary-300: hsl(var(--hue-primary) var(--sat-primary) 70%);
+  --color-primary-400: hsl(var(--hue-primary) var(--sat-primary) 60%);
+  --color-primary-500: hsl(var(--hue-primary) var(--sat-primary) 53%);
+  --color-primary-600: hsl(var(--hue-primary) var(--sat-primary) 42%);
+  --color-primary-700: hsl(var(--hue-primary) var(--sat-primary) 34%);
+  --color-primary-800: hsl(var(--hue-primary) var(--sat-primary) 26%);
+  --color-primary-900: hsl(var(--hue-primary) var(--sat-primary) 18%);
+  --color-primary-950: hsl(var(--hue-primary) var(--sat-primary) 10%);
+  --color-primary-975: hsl(var(--hue-primary) var(--sat-primary) 7%);
 
   --color-error-25: hsl(var(--hue-error) 82% 97%);
   --color-error-50: hsl(var(--hue-error) 82% 95%);
@@ -285,8 +289,8 @@ declared below (matches how Google Fonts itself serves these). */
 
 /* laugh.town "ink & paper" neutral ramp (DESIGN.md §2). Hardcoded to literal
 oklch values instead of derived from --hue-primary/--contrast-sat — the
-primary brand hue (marquee-red) is a sparse accent, not a neutral tint
-source, so the newsprint warm-gray scale is authored directly here. Light is
+primary brand color is achromatic (black/white) and unsuited as a neutral
+tint source, so the newsprint warm-gray scale is authored directly here. Light is
 the newsprint edition; the prefers-color-scheme: dark block below is the
 "late-edition press" companion from DESIGN.md §2. */
 
@@ -308,8 +312,13 @@ the newsprint edition; the prefers-color-scheme: dark block below is the
   --color-contrast-1000: oklch(4% 0.005 80);
 }
 
+/* `data-theme` is set by initThemeOverride() (src/lib/theme-override.ts)
+from a `?dark=true|false` URL param — used when the caller's own dark-mode
+choice lives in sessionStorage on a different origin (e.g. laugh.town) and
+so isn't visible to `prefers-color-scheme` here. It takes priority over the
+OS preference in both directions. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme='light']) {
     /* text-text-default resolves to contrast-900, so this step must stay
     bright (it's the default ink color on dark paper) — mirrors the light
     ramp's direction (low = near page bg, high = near ink) rather than its
@@ -330,6 +339,26 @@ the newsprint edition; the prefers-color-scheme: dark block below is the
     --color-contrast-25: oklch(16% 0.005 80); /* press-paper */
     --color-contrast-0: oklch(14% 0.005 80); /* press-paper, page bg */
   }
+}
+
+/* Same dark ramp as above, forced on regardless of OS preference when
+`data-theme="dark"` is set explicitly. */
+:root[data-theme='dark'] {
+  --color-contrast-1000: oklch(96% 0.005 80);
+  --color-contrast-975: oklch(92% 0.005 80);
+  --color-contrast-950: oklch(89% 0.005 80);
+  --color-contrast-900: oklch(85% 0.005 80);
+  --color-contrast-800: oklch(72% 0.005 80);
+  --color-contrast-700: oklch(62% 0.005 80);
+  --color-contrast-600: oklch(50% 0.005 80);
+  --color-contrast-500: oklch(40% 0.006 80);
+  --color-contrast-400: oklch(30% 0.006 80);
+  --color-contrast-300: oklch(23% 0.006 80);
+  --color-contrast-200: oklch(21% 0.006 80);
+  --color-contrast-100: oklch(19% 0.005 80);
+  --color-contrast-50: oklch(17% 0.005 80);
+  --color-contrast-25: oklch(16% 0.005 80);
+  --color-contrast-0: oklch(14% 0.005 80);
 }
 
 @theme inline {

@@ -5,7 +5,10 @@ import { createRoot } from 'react-dom/client'
 import { ErrorView } from '#/components/error-view.tsx'
 import { CustomizationProvider } from '#/contexts/customization'
 import type { HydrationData } from '#/hydration-data.d.ts'
+import { initThemeOverride } from '#/lib/theme-override.ts'
 import { LocaleProvider } from '#/locales/locale-provider.tsx'
+
+initThemeOverride()
 
 const {
   //

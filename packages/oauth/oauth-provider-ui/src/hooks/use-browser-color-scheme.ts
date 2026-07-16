@@ -5,16 +5,25 @@ const query =
     ? null
     : window.matchMedia('(prefers-color-scheme: dark)')
 
+function resolveTheme(): 'light' | 'dark' {
+  // `data-theme` is set by initThemeOverride() from a `?dark=true|false`
+  // URL param and takes priority over the OS preference — see the comment
+  // above the `[data-theme]` rules in style.css.
+  const override = document.documentElement.dataset.theme
+  if (override === 'dark' || override === 'light') return override
+  return query?.matches ? 'dark' : 'light'
+}
+
 export function useBrowserColorScheme() {
-  const [theme, setTheme] = useState<'light' | 'dark'>(
-    query?.matches ? 'dark' : 'light',
+  const [theme, setTheme] = useState<'light' | 'dark'>(() =>
+    typeof window === 'undefined' ? 'light' : resolveTheme(),
   )
 
   useEffect(() => {
     if (!query) return
 
     const listener = () => {
-      setTheme(query.matches ? 'dark' : 'light')
+      setTheme(resolveTheme())
     }
 
     query.addEventListener('change', listener)

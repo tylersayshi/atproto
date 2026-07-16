@@ -13,7 +13,10 @@ import { CustomizationProvider } from '#/contexts/customization.tsx'
 import { NotificationsProvider } from '#/contexts/notifications.tsx'
 import { SessionProvider, useSessionContext } from '#/contexts/session.tsx'
 import type { HydrationData } from '#/hydration-data.d.ts'
+import { initThemeOverride } from '#/lib/theme-override.ts'
 import { LocaleProvider } from '#/locales/locale-provider.tsx'
+
+initThemeOverride()
 
 const {
   __authorizeData: authorizeData,

@@ -47,6 +47,11 @@ const SPA_CSP: CspConfig = {
   'connect-src': ["'self'"],
   // Allow loading of PDS logo & User avatars
   'img-src': ['data:', 'https:'],
+  // Self-hosted brand fonts (src/fonts/*.woff2 in oauth-provider-ui), served
+  // same-origin under ~assets/. Without this, font-src falls back to
+  // default-src 'none' and every @font-face silently fails, dropping to the
+  // browser's generic fallback (e.g. "cursive" for --font-masthead).
+  'font-src': ["'self'"],
   // Prevent embedding in iframes
   'frame-ancestors': ["'none'"],
 }

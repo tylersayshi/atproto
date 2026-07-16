@@ -9,8 +9,11 @@ import { FormCard } from '#/components/forms/form-card.tsx'
 import { Admonition } from '#/components/utils/admonition.tsx'
 import { CustomizationProvider } from '#/contexts/customization.tsx'
 import type { HydrationData } from '#/hydration-data.d.ts'
+import { initThemeOverride } from '#/lib/theme-override.ts'
 import { LocaleProvider } from '#/locales/locale-provider.tsx'
 import { LayoutApp } from './components/layouts/layout-app.js'
+
+initThemeOverride()
 
 const {
   //

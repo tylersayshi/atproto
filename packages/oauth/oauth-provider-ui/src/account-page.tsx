@@ -10,8 +10,11 @@ import { CustomizationProvider } from '#/contexts/customization.tsx'
 import { NotificationsProvider } from '#/contexts/notifications.tsx'
 import { InitialSelectedSession, SessionProvider } from '#/contexts/session.tsx'
 import type { HydrationData } from '#/hydration-data.d.ts'
+import { initThemeOverride } from '#/lib/theme-override.ts'
 import { LocaleProvider } from '#/locales/locale-provider.tsx'
 import { router } from '#/pages/router'
+
+initThemeOverride()
 
 const {
   __customizationData: customizationData,

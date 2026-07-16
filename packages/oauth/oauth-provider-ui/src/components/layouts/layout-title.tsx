@@ -77,7 +77,7 @@ export function LayoutTitle({
           {subtitle && (
             <p
               key="subtitle"
-              className="text-text-light hidden max-w-xs md:block"
+              className="font-masthead text-text-light hidden max-w-xs md:block"
             >
               {subtitle}
             </p>
